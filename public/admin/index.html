@@ -225,7 +225,7 @@ function render() {
 }
 
 async function load() {
-  try { products = await api("admin/products"); render(); }
+  try { products = await api("manage/products"); render(); }
   catch (e) { $("#list").innerHTML = `<div class="empty"><h2>Couldn't load products</h2><p>${esc(e.message)}</p></div>`; }
 }
 
@@ -235,14 +235,14 @@ async function move(i, dir) {
   render();
   try {
     // Save the new order for every product whose position changed
-    await Promise.all(products.map((p, idx) => p.order === idx ? null : (p.order = idx, api(`admin/products/${p.id}`, jsonOpts("PUT", p)))));
+    await Promise.all(products.map((p, idx) => p.order === idx ? null : (p.order = idx, api(`manage/products/${p.id}`, jsonOpts("PUT", p)))));
   } catch (e) { toast(e.message, true); load(); }
 }
 
 async function removeProduct(id) {
   const p = products.find(x => x.id === id);
   if (!confirm(`Delete "${p.name}"? This can't be undone.`)) return;
-  try { await api(`admin/products/${id}`, { method: "DELETE" }); products = products.filter(x => x.id !== id); render(); toast("Deleted"); }
+  try { await api(`manage/products/${id}`, { method: "DELETE" }); products = products.filter(x => x.id !== id); render(); toast("Deleted"); }
   catch (e) { toast(e.message, true); }
 }
 
@@ -251,7 +251,7 @@ async function seed() {
   try {
     for (let i = 0; i < STARTERS.length; i++) {
       const [name, occ, price] = STARTERS[i];
-      await api("admin/products", jsonOpts("POST", { name, occ, price, order: i, visible: true }));
+      await api("manage/products", jsonOpts("POST", { name, occ, price, order: i, visible: true }));
     }
     toast("Example products added. Tap Edit to add your photos.");
     load();
@@ -314,7 +314,7 @@ form.onsubmit = async e => {
     let img = photo.url;
     if (photo.blob) {
       btn.textContent = "Uploading photo…";
-      img = (await api("admin/upload", { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: photo.blob })).url;
+      img = (await api("manage/upload", { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: photo.blob })).url;
     }
     const data = {
       name: form.name.value, occ: form.occ.value, price: form.price.value,
@@ -322,10 +322,10 @@ form.onsubmit = async e => {
     };
     if (editing) {
       data.order = editing.order;
-      const saved = await api(`admin/products/${editing.id}`, jsonOpts("PUT", data));
+      const saved = await api(`manage/products/${editing.id}`, jsonOpts("PUT", data));
       products = products.map(p => p.id === editing.id ? saved : p);
     } else {
-      products.push(await api("admin/products", jsonOpts("POST", data)));
+      products.push(await api("manage/products", jsonOpts("POST", data)));
     }
     render(); dlg.close(); toast("Saved ✓");
   } catch (err) { toast(err.message, true); }
@@ -336,7 +336,7 @@ form.onsubmit = async e => {
 const sform = $("#settings-form");
 async function loadSettings() {
   try {
-    const s = await api("admin/settings");
+    const s = await api("manage/settings");
     for (const k of ["brand", "city", "whatsapp", "instagram", "email"]) sform[k].value = s[k] || "";
     if (s.brand) { $("#brand").textContent = s.brand; document.title = `${s.brand} admin`; }
   } catch (e) { toast(e.message, true); }
@@ -345,7 +345,7 @@ sform.onsubmit = async e => {
   e.preventDefault();
   const body = Object.fromEntries(new FormData(sform));
   try {
-    const s = await api("admin/settings", jsonOpts("PUT", body));
+    const s = await api("manage/settings", jsonOpts("PUT", body));
     if (s.brand) $("#brand").textContent = s.brand;
     toast("Details saved ✓");
   } catch (err) { toast(err.message, true); }

@@ -12,7 +12,7 @@ app.http("publicProducts", {
 
 // Admin: list / create / update / delete products
 app.http("adminProducts", {
-  methods: ["GET", "POST", "PUT", "DELETE"], authLevel: "anonymous", route: "admin/products/{id?}",
+  methods: ["GET", "POST", "PUT", "DELETE"], authLevel: "anonymous", route: "manage/products/{id?}",
   handler: s.safe(async (req) => {
     if (!s.isAdmin(req)) return s.forbidden();
     const id = req.params.id;

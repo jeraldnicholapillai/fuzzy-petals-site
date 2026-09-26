@@ -7,7 +7,7 @@ const MAX_BYTES = 5 * 1024 * 1024;
 
 // Admin: upload a product photo (raw image bytes in the request body)
 app.http("adminUpload", {
-  methods: ["POST"], authLevel: "anonymous", route: "admin/upload",
+  methods: ["POST"], authLevel: "anonymous", route: "manage/upload",
   handler: s.safe(async (req) => {
     if (!s.isAdmin(req)) return s.forbidden();
     const type = (req.headers.get("content-type") || "").split(";")[0].trim();

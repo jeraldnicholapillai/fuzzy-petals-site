@@ -9,7 +9,7 @@ app.http("publicSettings", {
 
 // Admin: update business details
 app.http("adminSettings", {
-  methods: ["GET", "PUT"], authLevel: "anonymous", route: "admin/settings",
+  methods: ["GET", "PUT"], authLevel: "anonymous", route: "manage/settings",
   handler: s.safe(async (req) => {
     if (!s.isAdmin(req)) return s.forbidden();
     if (req.method === "GET") return { jsonBody: await s.getSettings() };
