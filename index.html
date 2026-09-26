@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Shop Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff8f1;--card:#fff;--ink:#3a2a2f;--muted:#7a6a6e;--line:rgba(58,42,47,.12);--rose:#e8577e;--rose-dark:#c93f66;--sage:#7fa77a;--danger:#c0392b;--radius:16px;--shadow:0 6px 20px rgba(90,40,50,.08)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;padding-bottom:40px}
+  h1,h2{font-family:'Fraunces',Georgia,serif}
+  button,input,select,textarea{font-family:inherit;font-size:1rem;color:var(--ink)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 16px}
+
+  header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:60px}
+  .top h1{font-size:1.2rem}
+  .top-links{display:flex;gap:14px;font-size:.9rem;font-weight:700}
+  .top-links a{color:var(--muted);text-decoration:none}.top-links a:hover{color:var(--rose)}
+  .tabs{display:flex;gap:4px}
+  .tab{flex:1;padding:12px;border:none;background:none;font-weight:800;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer}
+  .tab.active{color:var(--rose);border-color:var(--rose)}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 18px;border-radius:999px;border:none;font-weight:800;cursor:pointer;text-decoration:none}
+  .btn-primary{background:var(--rose);color:#fff}.btn-primary:hover{background:var(--rose-dark)}
+  .btn-light{background:#f3e9e4;color:var(--ink)}
+  .btn-danger{background:#fbe5e2;color:var(--danger)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:1rem;display:grid;place-items:center}
+  .icon-btn:disabled{opacity:.3;cursor:default}
+
+  .bar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:22px 0 14px;flex-wrap:wrap}
+  .bar h2{font-size:1.4rem}
+  .hint{color:var(--muted);font-size:.9rem}
+
+  .list{display:grid;gap:10px}
+  .item{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:center;padding:10px 12px 10px 10px}
+  .item.hidden-item{opacity:.6}
+  .thumb{width:72px;height:72px;border-radius:12px;background:#f7eee9 center/cover no-repeat;display:grid;place-items:center;font-size:1.8rem}
+  .info{min-width:0}
+  .info b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta{color:var(--muted);font-size:.88rem}
+  .pill{display:inline-block;font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:999px;background:#eee;color:var(--muted);margin-left:6px;vertical-align:middle}
+  .actions{display:flex;gap:6px;align-items:center}
+  @media(max-width:560px){
+    .item{grid-template-columns:60px 1fr}
+    .thumb{width:60px;height:60px}
+    .actions{grid-column:1/-1;justify-content:flex-end}
+  }
+
+  .empty{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:40px 20px;text-align:center}
+  .empty p{color:var(--muted);margin:8px 0 20px}
+  .empty .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+  .panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;display:grid;gap:14px}
+  label{display:grid;gap:6px;font-weight:700;font-size:.9rem}
+  label small{font-weight:600;color:var(--muted)}
+  input,select,textarea{padding:11px 13px;border:2px solid var(--line);border-radius:12px;background:#fffdfb;width:100%}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--rose)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:480px){.row{grid-template-columns:1fr}}
+  .check{display:flex;align-items:center;gap:10px;font-weight:700}
+  .check input{width:22px;height:22px;accent-color:var(--rose)}
+
+  dialog{border:none;border-radius:20px;padding:0;width:min(520px,calc(100% - 24px));max-height:calc(100% - 24px);box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  dialog::backdrop{background:rgba(40,20,25,.45)}
+  .dlg-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px 0}
+  .dlg-head h2{font-size:1.3rem}
+  .dlg-body{padding:16px 20px 20px;display:grid;gap:14px}
+  .dlg-foot{display:flex;gap:10px;justify-content:flex-end;padding:0 20px 20px}
+  .photo-pick{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+  .photo-prev{width:120px;height:120px;border-radius:14px;background:#f7eee9 center/cover no-repeat;display:grid;place-items:center;font-size:2.4rem;border:2px dashed var(--line)}
+  .photo-pick .btns{display:grid;gap:8px}
+
+  .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(120px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;transition:transform .25s;z-index:100;max-width:calc(100% - 32px);text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.err{background:var(--danger)}
+  .loading{text-align:center;color:var(--muted);padding:40px}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top">
+    <h1>🌸 <span id="brand">Shop</span> admin</h1>
+    <div class="top-links">
+      <a href="/" target="_blank" rel="noopener">View site ↗</a>
+      <a href="/.auth/logout?post_logout_redirect_uri=/">Sign out</a>
+    </div>
+  </div>
+  <div class="wrap tabs">
+    <button class="tab active" data-tab="products">Products</button>
+    <button class="tab" data-tab="settings">Business details</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- PRODUCTS -->
+  <section id="tab-products">
+    <div class="bar">
+      <div><h2>Products</h2><div class="hint" id="count"></div></div>
+      <button class="btn btn-primary" id="add-btn">+ Add product</button>
+    </div>
+    <div id="list" class="list"><div class="loading">Loading…</div></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="tab-settings" hidden>
+    <div class="bar"><div><h2>Business details</h2><div class="hint">Shown across the website.</div></div></div>
+    <form class="panel" id="settings-form">
+      <label>Brand name<input name="brand" placeholder="Fuzzy Petals" required></label>
+      <label>City<input name="city" placeholder="Dubai"></label>
+      <label>WhatsApp number <small>With country code, e.g. 971501234567. Customers' orders go here.</small>
+        <input name="whatsapp" inputmode="tel" placeholder="971501234567" required></label>
+      <label>Instagram handle<input name="instagram" placeholder="fuzzypetals"></label>
+      <label>Email<input name="email" type="email" placeholder="hello@example.com"></label>
+      <div><button class="btn btn-primary" type="submit">Save details</button></div>
+    </form>
+  </section>
+</main>
+
+<!-- PRODUCT EDITOR -->
+<dialog id="editor">
+  <form id="product-form" method="dialog">
+    <div class="dlg-head"><h2 id="editor-title">Add product</h2><button type="button" class="icon-btn" data-close aria-label="Close">✕</button></div>
+    <div class="dlg-body">
+      <div class="photo-pick">
+        <div class="photo-prev" id="photo-prev">📷</div>
+        <div class="btns">
+          <button type="button" class="btn btn-light" id="photo-btn">Choose photo</button>
+          <button type="button" class="btn btn-danger" id="photo-remove" hidden>Remove photo</button>
+          <input type="file" id="photo-input" accept="image/*" hidden>
+        </div>
+      </div>
+      <label>Name<input name="name" required maxlength="80" placeholder="Blush Rose Bouquet"></label>
+      <div class="row">
+        <label>Category
+          <select name="occ">
+            <option value="everyday">Everyday</option>
+            <option value="love">Love &amp; romance</option>
+            <option value="celebrations">Celebrations</option>
+            <option value="gifts">Gifts</option>
+          </select>
+        </label>
+        <label>Price from (AED)<input name="price" type="number" min="0" step="1" inputmode="decimal" required placeholder="120"></label>
+      </div>
+      <label>Short description <small>Optional</small><textarea name="description" rows="2" maxlength="300" placeholder="Six soft pink roses wrapped in kraft paper"></textarea></label>
+      <label class="check"><input type="checkbox" name="visible" checked> Show on website</label>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn btn-light" data-close>Cancel</button>
+      <button type="submit" class="btn btn-primary" id="save-btn">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CAT = { everyday: "Everyday", love: "Love & romance", celebrations: "Celebrations", gifts: "Gifts" };
+const STARTERS = [
+  ["Sunshine Single Stem", "everyday", 25], ["Blush Rose Bouquet", "love", 120], ["Mum's Garden", "gifts", 95],
+  ["Graduation Posy", "celebrations", 85], ["Lavender Dreams", "everyday", 70], ["Teacher Thank-You", "gifts", 45],
+  ["Festive Joy Bunch", "celebrations", 110], ["Forever Red", "love", 150]
+];
+let products = [];
+let editing = null;      // product being edited, or null for new
+let photo = { url: "", blob: null, preview: "" };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+function toast(msg, err) {
+  const t = $("#toast"); t.textContent = msg; t.className = "toast show" + (err ? " err" : "");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.className = "toast", err ? 4500 : 2200);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch("/api/" + path, { credentials: "same-origin", ...opts });
+  if (res.status === 401 || res.redirected && res.url.includes("login")) { location.href = "/login.html"; throw new Error("Please sign in"); }
+  if (res.status === 204) return null;
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data;
+}
+const jsonOpts = (method, body) => ({ method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+
+/* ---------- Tabs ---------- */
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === b));
+  $("#tab-products").hidden = b.dataset.tab !== "products";
+  $("#tab-settings").hidden = b.dataset.tab !== "settings";
+});
+
+/* ---------- Products list ---------- */
+function render() {
+  const list = $("#list");
+  const shown = products.filter(p => p.visible).length;
+  $("#count").textContent = products.length ? `${products.length} product${products.length === 1 ? "" : "s"} · ${shown} on the website` : "";
+  if (!products.length) {
+    list.innerHTML = `<div class="empty"><div style="font-size:2.6rem">🌷</div><h2>No products yet</h2>
+      <p>Add your first flower, or start with a few example products you can edit.</p>
+      <div class="btns"><button class="btn btn-primary" onclick="openEditor()">+ Add product</button>
+      <button class="btn btn-light" id="seed-btn" onclick="seed()">Add example products</button></div></div>`;
+    return;
+  }
+  list.innerHTML = products.map((p, i) => `
+    <div class="item${p.visible ? "" : " hidden-item"}">
+      <div class="thumb" style="${p.img ? `background-image:url('${esc(p.img)}')` : ""}">${p.img ? "" : "🌸"}</div>
+      <div class="info">
+        <b>${esc(p.name)}${p.visible ? "" : '<span class="pill">Hidden</span>'}</b>
+        <div class="meta">${esc(CAT[p.occ] || p.occ)} · AED ${esc(p.price)}</div>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" title="Move up" aria-label="Move up" ${i === 0 ? "disabled" : ""} onclick="move(${i},-1)">↑</button>
+        <button class="icon-btn" title="Move down" aria-label="Move down" ${i === products.length - 1 ? "disabled" : ""} onclick="move(${i},1)">↓</button>
+        <button class="btn btn-light" onclick="openEditor('${p.id}')">Edit</button>
+        <button class="icon-btn" title="Delete" aria-label="Delete" onclick="removeProduct('${p.id}')">🗑</button>
+      </div>
+    </div>`).join("");
+}
+
+async function load() {
+  try { products = await api("admin/products"); render(); }
+  catch (e) { $("#list").innerHTML = `<div class="empty"><h2>Couldn't load products</h2><p>${esc(e.message)}</p></div>`; }
+}
+
+async function move(i, dir) {
+  const j = i + dir; if (j < 0 || j >= products.length) return;
+  [products[i], products[j]] = [products[j], products[i]];
+  render();
+  try {
+    // Save the new order for every product whose position changed
+    await Promise.all(products.map((p, idx) => p.order === idx ? null : (p.order = idx, api(`admin/products/${p.id}`, jsonOpts("PUT", p)))));
+  } catch (e) { toast(e.message, true); load(); }
+}
+
+async function removeProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (!confirm(`Delete "${p.name}"? This can't be undone.`)) return;
+  try { await api(`admin/products/${id}`, { method: "DELETE" }); products = products.filter(x => x.id !== id); render(); toast("Deleted"); }
+  catch (e) { toast(e.message, true); }
+}
+
+async function seed() {
+  $("#seed-btn").disabled = true;
+  try {
+    for (let i = 0; i < STARTERS.length; i++) {
+      const [name, occ, price] = STARTERS[i];
+      await api("admin/products", jsonOpts("POST", { name, occ, price, order: i, visible: true }));
+    }
+    toast("Example products added. Tap Edit to add your photos.");
+    load();
+  } catch (e) { toast(e.message, true); $("#seed-btn").disabled = false; }
+}
+
+/* ---------- Editor ---------- */
+const dlg = $("#editor"), form = $("#product-form");
+function setPhotoPreview(src) {
+  const el = $("#photo-prev");
+  el.style.backgroundImage = src ? `url('${src}')` : ""; el.textContent = src ? "" : "📷";
+  $("#photo-remove").hidden = !src;
+  $("#photo-btn").textContent = src ? "Change photo" : "Choose photo";
+}
+function openEditor(id) {
+  editing = id ? products.find(p => p.id === id) : null;
+  form.reset();
+  $("#editor-title").textContent = editing ? "Edit product" : "Add product";
+  if (editing) {
+    form.name.value = editing.name; form.occ.value = editing.occ; form.price.value = editing.price;
+    form.description.value = editing.description || ""; form.visible.checked = editing.visible;
+  }
+  photo = { url: editing?.img || "", blob: null, preview: editing?.img || "" };
+  setPhotoPreview(photo.preview);
+  dlg.showModal();
+}
+dlg.querySelectorAll("[data-close]").forEach(b => b.onclick = () => dlg.close());
+$("#add-btn").onclick = () => openEditor();
+$("#photo-btn").onclick = () => $("#photo-input").click();
+$("#photo-remove").onclick = () => { photo = { url: "", blob: null, preview: "" }; setPhotoPreview(""); };
+
+// Shrink photos on the phone before uploading (faster, cheaper, looks the same)
+async function resize(file, max = 1200) {
+  const img = await new Promise((res, rej) => {
+    const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error("That file isn't a photo we can read. Try a JPG or PNG."));
+    i.src = URL.createObjectURL(file);
+  });
+  const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const c = document.createElement("canvas");
+  c.width = Math.round(img.naturalWidth * scale); c.height = Math.round(img.naturalHeight * scale);
+  const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  URL.revokeObjectURL(img.src);
+  return new Promise(r => c.toBlob(r, "image/jpeg", 0.85));
+}
+$("#photo-input").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try {
+    const blob = await resize(f);
+    if (photo.preview && photo.preview.startsWith("blob:")) URL.revokeObjectURL(photo.preview);
+    photo = { url: "", blob, preview: URL.createObjectURL(blob) };
+    setPhotoPreview(photo.preview);
+  } catch (err) { toast(err.message, true); }
+};
+
+form.onsubmit = async e => {
+  e.preventDefault();
+  const btn = $("#save-btn"); btn.disabled = true; btn.textContent = "Saving…";
+  try {
+    let img = photo.url;
+    if (photo.blob) {
+      btn.textContent = "Uploading photo…";
+      img = (await api("admin/upload", { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: photo.blob })).url;
+    }
+    const data = {
+      name: form.name.value, occ: form.occ.value, price: form.price.value,
+      description: form.description.value, visible: form.visible.checked, img
+    };
+    if (editing) {
+      data.order = editing.order;
+      const saved = await api(`admin/products/${editing.id}`, jsonOpts("PUT", data));
+      products = products.map(p => p.id === editing.id ? saved : p);
+    } else {
+      products.push(await api("admin/products", jsonOpts("POST", data)));
+    }
+    render(); dlg.close(); toast("Saved ✓");
+  } catch (err) { toast(err.message, true); }
+  finally { btn.disabled = false; btn.textContent = "Save"; }
+};
+
+/* ---------- Settings ---------- */
+const sform = $("#settings-form");
+async function loadSettings() {
+  try {
+    const s = await api("admin/settings");
+    for (const k of ["brand", "city", "whatsapp", "instagram", "email"]) sform[k].value = s[k] || "";
+    if (s.brand) { $("#brand").textContent = s.brand; document.title = `${s.brand} admin`; }
+  } catch (e) { toast(e.message, true); }
+}
+sform.onsubmit = async e => {
+  e.preventDefault();
+  const body = Object.fromEntries(new FormData(sform));
+  try {
+    const s = await api("admin/settings", jsonOpts("PUT", body));
+    if (s.brand) $("#brand").textContent = s.brand;
+    toast("Details saved ✓");
+  } catch (err) { toast(err.message, true); }
+};
+
+load(); loadSettings();
+</script>
+</body>
+</html>

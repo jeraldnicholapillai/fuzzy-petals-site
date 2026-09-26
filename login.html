@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Admin sign in</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',system-ui,sans-serif;background:#fff8f1;color:#3a2a2f;min-height:100vh;display:grid;place-items:center;padding:16px}
+  .card{background:#fff;border-radius:22px;box-shadow:0 10px 30px rgba(90,40,50,.1);padding:36px 28px;max-width:400px;width:100%;text-align:center}
+  h1{font-family:'Fraunces',serif;font-size:1.6rem;margin:8px 0}
+  p{color:#7a6a6e;margin-bottom:24px}
+  .btn{display:block;padding:14px;border-radius:999px;font-weight:800;text-decoration:none;margin-top:10px}
+  .ms{background:#e8577e;color:#fff}
+  .gh{background:#f3e9e4;color:#3a2a2f}
+  .warn{background:#fdecea;color:#a3322a;border-radius:12px;padding:12px;margin-bottom:18px;font-weight:700;font-size:.92rem}
+  .back{display:inline-block;margin-top:22px;color:#7a6a6e;font-size:.9rem}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div style="font-size:2.4rem">🌸</div>
+    <h1>Shop admin</h1>
+    <div class="warn" id="denied" hidden>You're signed in as <b id="who"></b>, but that account doesn't have admin access. Open the invite link you were sent, or sign out and use a different account.</div>
+    <p>Sign in to manage products and business details.</p>
+    <a class="btn ms" href="/.auth/login/aad?post_login_redirect_uri=/admin/">Sign in with Microsoft</a>
+    <a class="btn gh" href="/.auth/login/github?post_login_redirect_uri=/admin/">Sign in with GitHub</a>
+    <a class="back" id="out" href="/">← Back to website</a>
+  </div>
+<script>
+fetch("/.auth/me").then(r => r.json()).then(({ clientPrincipal: p }) => {
+  if (!p) return;
+  if (p.userRoles.includes("admin")) { location.href = "/admin/"; return; }
+  document.getElementById("who").textContent = p.userDetails;
+  document.getElementById("denied").hidden = false;
+  const out = document.getElementById("out");
+  out.href = "/.auth/logout?post_logout_redirect_uri=/login.html"; out.textContent = "Sign out";
+}).catch(() => {});
+</script>
+</body>
+</html>
